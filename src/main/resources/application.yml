@@ -2,9 +2,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    username: root
+    username: cdl
     password: 123456
-    url: jdbc:mysql://127.0.0.1:3306/mysql?useUnicode=true&characterEncoding=UTF8
+    url: jdbc:mysql://127.0.0.1:3306/appcheck?useUnicode=true&characterEncoding=UTF8
 
   redis:
     host: 127.0.0.1
