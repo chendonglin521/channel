@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+     >
+<head>
+    <script type="text/javascript"
+                 src="../jquery-easyui-1.5.2/jquery.min.js"></script>
+<script type="text/javascript"
+        src="../jquery-easyui-1.5.2/jquery.easyui.min.js"></script>
+<script type="text/javascript"
+        src="../jquery-easyui-1.5.2/locale/easyui-lang-zh_CN.js"></script>
+<link rel="stylesheet"
+      href="../jquery-easyui-1.5.2/themes/bootstrap/easyui.css" type="text/css"/>
+<link rel="stylesheet" href="../jquery-easyui-1.5.2/themes/icon.css"
+      type="text/css"/>
+<!--<script src="/common.js"></script>-->
+</head>
+<body>
+
+<table border="1">
+    <thead>
+    <th colspan="2" th:text="${email.tableHead}"></th>
+    </thead>
+    <tbody>
+    <tr>
+        <td>项目名称(必填)</td>
+        <td th:text="${email.programName}"></td>
+    </tr>
+    <tr>
+        <td >手机型号(必填)</td>
+        <td th:text="${email.phoneVersion}"></td>
+    </tr>
+    <tr>
+        <td>刷机版本号(必填)</td>
+        <td th:text="${email.flashVersion}"></td>
+    </tr>
+    <tr>
+        <td>提测日期(必填)</td>
+        <td th:datetime="${email.testDate}"></td>
+    </tr>
+    <tr>
+        <td>研发负责人(必填)</td>
+        <td th:text="${email.rdLeader}"></td>
+    </tr>
+    <tr>
+        <td>测试人员</td>
+        <td th:text="${email.tester}">DZ_DZ_DZ6735R6_CN</td>
+    </tr>
+    <tr>
+        <td>测试结论</td>
+        <td th:text="${email.testResult}">DZ_DZ_DZ6735R6_CN</td>
+    </tr>
+    <tr>
+        <td>Push途径(必填)</td>
+        <td th:text="${email.pushWay}">emmcid/cpuid</td>
+    </tr>
+    <tr>
+        <td>刷机列表地址(必填)</td>
+        <td th:text="${email.flashLink}">http://10.100.14.13/projects/antithief/wiki/Flash_recovery</td>
+    </tr>
+    <tr>
+        <td>配置中心地址(必填)</td>
+        <td th:text="${email.confLink}"> http://manage.online.test.os.qkcorp.net/conf</td>
+    </tr>
+    <tr>
+        <td>恢复方案(必填)</td>
+        <td th:text="${email.rescovery}">dzdz6760002507_filemanager</td>
+    </tr>
+    <tr>
+        <td>是否关联其他模块</td>
+        <td th:text="${email.relation}">"无"</td>
+    </tr>
+    <tr>
+        <td>测试建议以及可能的影响范围</td>
+        <td th:text="${email.suggest}">1.验证配置的恢复路径是否为预装应用路径（没有填写路径，看是否支持恢复,不可以请帮忙提供测试机器的预装应用路径及包名）
+            2.预装应用是否恢复成功
+            3.请反馈桌面是否重置到最初版本，即桌面reset是否有效
+            4.请反馈从点击开始恢复到恢复完成所花费的时间
+            5.当弹出提示框时，界面是否有取消按钮，请给出结果
+        </td>
+    </tr>
+    </tbody>
+</table></body>
+</html>

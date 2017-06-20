@@ -4,18 +4,22 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: cdl
     password: 123456
-    url: jdbc:mysql://127.0.0.1:3306/appcheck?useUnicode=true&characterEncoding=UTF8
-
-  redis:
-    host: 127.0.0.1
-    port: 6397
-
+    url: jdbc:mysql://10.100.14.26:3306/appcheck?useUnicode=true&characterEncoding=UTF8
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
     cache: false
     mode: HTML5
+    content-type: text/html
 
+redis:
+  host: 127.0.0.1
+  port: 6397
+
+email:
+  to: i-chendonglin@360.cn
+  from: i-chendonglin@monitor.cn
+  host: localhost
 
 
 
