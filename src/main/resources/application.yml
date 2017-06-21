@@ -12,14 +12,23 @@ spring:
     mode: HTML5
     content-type: text/html
 
-redis:
-  host: 127.0.0.1
-  port: 6397
+jedis :
+  pool :
+    host : 127.0.0.1
+    port : 6379
+    config :
+      maxTotal: 100
+      maxIdle: 10
+      maxWaitMillis : 100000
 
 email:
+  host: localhost
+  port: 25
+  username: i-chendonglin
+  password: chendonglin
   to: i-chendonglin@360.cn
   from: i-chendonglin@monitor.cn
-  host: localhost
+
 
 
 

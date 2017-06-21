@@ -1,5 +1,6 @@
 package com.qihoo360os.common;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
@@ -15,6 +16,8 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -34,19 +37,25 @@ public class DbAndEmailConfiguration {
         return DataSourceBuilder.create().build();
     }
 
-
-
-    @Value("${redis.host}")
-    private String host;
-    @Value("${redis.port}")
-    private String port;
-    @Value("${email.to}")
-    private String to;
-
-    @Bean
-    public Jedis redisDataSource(){
-        return new Jedis(host,Integer.valueOf(port));
+    @Bean(name= "jedis.pool")
+    @Autowired
+    public JedisPool jedisPool(@Qualifier("jedis.pool.config") JedisPoolConfig config,
+                               @Value("${jedis.pool.host}")String host,
+                               @Value("${jedis.pool.port}")int port) {
+        return new JedisPool(config, host, port);
     }
+
+    @Bean(name= "jedis.pool.config")
+    public JedisPoolConfig jedisPoolConfig (@Value("${jedis.pool.config.maxTotal}")int maxTotal,
+                                            @Value("${jedis.pool.config.maxIdle}")int maxIdle,
+                                            @Value("${jedis.pool.config.maxWaitMillis}")int maxWaitMillis) {
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxTotal(maxTotal);
+        config.setMaxIdle(maxIdle);
+        config.setMaxWaitMillis(maxWaitMillis);
+        return config;
+    }
+
 
     @Bean
     public JdbcTemplate secondJdbcTemplate(@Qualifier("mysqlDataSource") DataSource dataSource) {
@@ -55,13 +64,13 @@ public class DbAndEmailConfiguration {
 
 
     @Bean
-    public JavaMailSender mailSender() throws IOException {
+    public JavaMailSender mailSender(@Value("${email.host}")String host,@Value("${email.port}")int port,
+                                     @Value("${email.password}")String password,@Value("${email.username}")String username) throws IOException {
         final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        // Basic mail sender configuration, based on emailconfig.properties
-        mailSender.setHost("localhost");
-        mailSender.setPort(25);
-        mailSender.setUsername("i-chendonglin");
-        mailSender.setPassword("chendonglin");
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setUsername(username);
+        mailSender.setPassword(password);
          Properties javaMailProperties = new Properties();
         javaMailProperties=System.getProperties();
         mailSender.setJavaMailProperties(javaMailProperties);
@@ -79,7 +88,6 @@ public class DbAndEmailConfiguration {
     public ITemplateResolver htmlTemplateResolver() {
         final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setOrder(Integer.valueOf(1));
-//        templateResolver.setResolvablePatterns(Collections.singleton("templates/*"));
         templateResolver.setPrefix("templates/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode("HTML5");

@@ -18,7 +18,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
@@ -88,11 +87,12 @@ public class SendEmailServiceImpl implements SendEmailService {
     }
 
     @Override
-    public void sendHtmlEmail() throws MessagingException {
-        // Prepare the evaluation context
+    public void sendHtmlEmail(String channel) throws MessagingException {
+        //根据渠道号请求接口，获取email参数
+        //根据参数渲染html模板
+        //获取模板内容 发送eamil
         Locale locale=Locale.CHINA;
         final Context ctx = new Context(locale);
-
         EmailTable table=new EmailTable();
         table.setTableHead("远程恢复_测试申请表");
         table.setProgramName("DZ_DZ_DZ6735R6_CN");
