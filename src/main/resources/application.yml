@@ -14,7 +14,7 @@ spring:
 
 jedis :
   pool :
-    host : 127.0.0.1
+    host : 10.18.49.46
     port : 6379
     config :
       maxTotal: 100
@@ -22,12 +22,12 @@ jedis :
       maxWaitMillis : 100000
 
 email:
-  host: localhost
+  host: 10.18.49.46
   port: 25
   username: i-chendonglin
   password: chendonglin
   to: i-chendonglin@360.cn
-  from: i-chendonglin@monitor.cn
+  from: i-chendonglin@360monitor.cn
 
 
 
