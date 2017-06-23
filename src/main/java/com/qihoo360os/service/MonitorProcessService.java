@@ -8,5 +8,6 @@ import java.util.Map;
  */
 public interface MonitorProcessService {
 
-     Map<String,List<String>> getUpdates() ;
+//     Map<String,List<String>> getUpdates() ;
+     Map<String,String> getUpdates() ;
 }

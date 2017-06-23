@@ -1,4 +1,5 @@
 
+根据mysql 变化报告需要配置　发送邮件
 
 1 需要启动redis  redis-server
 

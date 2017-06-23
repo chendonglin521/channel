@@ -23,18 +23,17 @@ public class MonitorScheduleTask {
 
     @Scheduled(fixedRate = 60000)
     public void startMonitor() {
-        Map<String, List<String>> resultMap = monitorProcess.getUpdates();
+//        Map<String, List<String>> resultMap = monitorProcess.getUpdates();
+        Map<String, String> resultMap = monitorProcess.getUpdates();
         //resultMap 不为空时 发送通知邮件
         if(resultMap!=null&&resultMap.size()>0){
             resultMap.forEach((k,v)->{
                 try {
                     sendEmailService.sendHtmlEmail(k);
-                } catch (MessagingException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
         }
-
     }
-
 }

@@ -4,7 +4,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: cdl
     password: 123456
-    url: jdbc:mysql://10.100.14.26:3306/appcheck?useUnicode=true&characterEncoding=UTF8
+    url: jdbc:mysql://10.100.14.26:3306/appcheck?useUnicode=true&characterEncoding=utf8
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
@@ -28,7 +28,14 @@ email:
   password: chendonglin
   to: i-chendonglin@360.cn
   from: i-chendonglin@360monitor.cn
+  cc: i-chendonglin@360.cn,root2@360monitor.cn
 
+
+sayHi: " Hi, 艳丽 ?
+              请帮忙协调测试，谢谢啦。?
+          内容如下："
+
+secretKey: 04bf6c8f611fd1552d9dd04a8a5875aa19b686dcf6f05493a64d3b376a68d5cb
 
 
 

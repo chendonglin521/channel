@@ -16,6 +16,10 @@
 <!--<script src="/common.js"></script>-->
 </head>
 <body>
+<div>
+    <div th:text="${sayHi}" >
+
+    </div>
 
 <table border="1">
     <thead>
@@ -36,7 +40,7 @@
     </tr>
     <tr>
         <td>提测日期(必填)</td>
-        <td th:datetime="${email.testDate}"></td>
+        <td th:text="${#calendars.format(email.testDate,'yyyy-MM-dd')}"></td>
     </tr>
     <tr>
         <td>研发负责人(必填)</td>
@@ -72,7 +76,7 @@
     </tr>
     <tr>
         <td>测试建议以及可能的影响范围</td>
-        <td th:text="${email.suggest}">1.验证配置的恢复路径是否为预装应用路径（没有填写路径，看是否支持恢复,不可以请帮忙提供测试机器的预装应用路径及包名）
+        <td th:text="${email.suggest}" bgcolor="yellow" >1.验证配置的恢复路径是否为预装应用路径（没有填写路径，看是否支持恢复,不可以请帮忙提供测试机器的预装应用路径及包名）
             2.预装应用是否恢复成功
             3.请反馈桌面是否重置到最初版本，即桌面reset是否有效
             4.请反馈从点击开始恢复到恢复完成所花费的时间
@@ -80,5 +84,7 @@
         </td>
     </tr>
     </tbody>
-</table></body>
+</table>
+</div>
+</body>
 </html>

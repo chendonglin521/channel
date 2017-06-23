@@ -1,6 +1,8 @@
 package com.qihoo360os.service;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created by i-chendonglin on 2017/6/20.
@@ -8,6 +10,6 @@ import javax.mail.MessagingException;
 public interface SendEmailService {
 
     void sendEmail();
-    void sendHtmlEmail(String channel) throws MessagingException;
+    void sendHtmlEmail(String channel) throws MessagingException, Exception;
 
 }

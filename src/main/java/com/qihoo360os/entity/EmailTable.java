@@ -1,5 +1,6 @@
 package com.qihoo360os.entity;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ public class EmailTable {
     public String programName;
     public String phoneVersion;
     public String flashVersion;
-    public Date testDate;
+    public Calendar testDate;
     public String rdLeader;    //reasearch and development
     public String tester;
     public String testResult;
@@ -81,11 +82,11 @@ public class EmailTable {
         this.phoneVersion = phoneVersion;
     }
 
-    public Date getTestDate() {
+    public Calendar getTestDate() {
         return testDate;
     }
 
-    public void setTestDate(Date testDate) {
+    public void setTestDate(Calendar testDate) {
         this.testDate = testDate;
     }
 

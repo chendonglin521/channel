@@ -1,7 +1,16 @@
 package com.qihoo360os.service.impl;
-
 import com.qihoo360os.entity.EmailTable;
 import com.qihoo360os.service.SendEmailService;
+import net.sf.json.JSONObject;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -10,17 +19,18 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.io.*;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by i-chendonglin on 2017/6/20.
@@ -37,6 +47,13 @@ public class SendEmailServiceImpl implements SendEmailService {
     // 指定发送邮件的主机为 localhost
     @Value("${email.host}")
     private String host;
+    // 指定抄送人
+    @Value("${email.cc}")
+    private String[] cc;
+    @Value("${sayHi}")
+    private String sayHi;
+    @Value("${secretKey}")
+    private String secretKey;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -86,24 +103,54 @@ public class SendEmailServiceImpl implements SendEmailService {
         }
     }
 
+
+    /**
+     *
+     1.接口 /autoconfig/registerchannel?sign=xxx&channel=xxx
+     2.说明
+     sign 值 等于 query_str = "channel=xxx" + data（年月日）
+     3.sign 签名 结合key生成签名
+     sign = hash_hmac("sha256", query_str + body, key);
+     * @param channel
+     * @throws MessagingException
+     * @throws Exception
+     */
     @Override
-    public void sendHtmlEmail(String channel) throws MessagingException {
+    public void sendHtmlEmail(String channel) throws MessagingException, Exception {
         //根据渠道号请求接口，获取email参数
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        Date date=new Date();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        String body=sdf.format(date);
+        String sign= "channel="+channel+body;
+        //        String sign= "xnr_voto_l203_cm"+"2017-06-23";
+        Mac macSha256 = Mac.getInstance("HmacSHA256");
+        SecretKeySpec macKey = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
+        macSha256.init(macKey);
+        sign=bytesToHexString(macSha256.doFinal(sign.getBytes()));
+        HttpPost post = new HttpPost("http://10.18.49.151:8080/autoconfig/registerchannel?sign="+sign+"&channel="+channel);
+        HttpResponse response = httpclient.execute(post);
+        HttpEntity entity = response.getEntity();
+//       {"data":"DFSL_BLF_T9PG_CM","msg":"正常调用,该接口已经存在，请更换接口名","status":200,"total":0}
+        String json= EntityUtils.toString(entity, "utf-8");
+        JSONObject jsonObject=JSONObject.fromObject(json);
+        String programName=(String) jsonObject.get("data");
+
         //根据参数渲染html模板
         //获取模板内容 发送eamil
-        Locale locale=Locale.CHINA;
+        Locale locale = Locale.CHINA;
         final Context ctx = new Context(locale);
-        EmailTable table=new EmailTable();
+        EmailTable table = new EmailTable();
         table.setTableHead("远程恢复_测试申请表");
-        table.setProgramName("DZ_DZ_DZ6735R6_CN");
-        table.setPhoneVersion("dzdz6760002507");
-        table.setFlashVersion("量产版本即可，如6.0.054.p1.161201040158.dz_dz_dz6735r6_cn");
-        table.setTestDate(new Date());
+        table.setProgramName(programName);
+        table.setPhoneVersion(channel);
+        table.setFlashVersion("");
+        table.setTestDate(Calendar.getInstance());
         table.setRdLeader("沈贺");
         table.setPushWay("emmcid/cpuid");
         table.setFlashLink("http://10.100.14.13/projects/antithief/wiki/Flash_recovery");
         table.setConfLink("http://manage.online.test.os.qkcorp.net/conf");
-        table.setRescovery(" dzdz6760002507_filemanager");
+        table.setRescovery(channel + "_new");
         table.setRelation("无");
         table.setSuggest("1.验证配置的恢复路径是否为预装应用路径（没有填写路径，看是否支持恢复,不可以请帮忙提供测试机器的预装应用路径及包名）\n" +
                 "2.预装应用是否恢复成功\n" +
@@ -111,15 +158,33 @@ public class SendEmailServiceImpl implements SendEmailService {
                 "4.请反馈从点击开始恢复到恢复完成所花费的时间\n" +
                 "5.当弹出提示框时，界面是否有取消按钮，请给出结果\n");
         ctx.setVariable("email", table);
+        ctx.setVariable("sayHi", sayHi);
 
         final MimeMessage mimeMessage = mailSender.createMimeMessage();
         final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
-        message.setSubject(" 测试申请");
+        message.setSubject(" 测试申请(" + channel + "_new)");
         message.setFrom(from);
         message.setTo(to);
+        message.setCc(cc);
         final String htmlContent = this.htmlTemplateEngine.process("emailContent", ctx);
-        message.setText(htmlContent, true /* isHtml */);
+        String content = htmlContent.replaceAll("\\?", "<br>");
+        message.setText(content, true /* isHtml */);
         // Send email
         this.mailSender.send(mimeMessage);
+    }
+    public static String bytesToHexString(byte[] src){
+        StringBuilder stringBuilder = new StringBuilder("");
+        if (src == null || src.length <= 0) {
+            return null;
+        }
+        for (int i = 0; i < src.length; i++) {
+            int v = src[i] & 0xFF;
+            String hv = Integer.toHexString(v);
+            if (hv.length() < 2) {
+                stringBuilder.append(0);
+            }
+            stringBuilder.append(hv);
+        }
+        return stringBuilder.toString();
     }
 }
