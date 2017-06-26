@@ -140,11 +140,6 @@ public class MonitorProcessServiceImpl implements MonitorProcessService {
                 }
             });
         });
-//		初始化缓存
-//		channelAndPkgs.forEach((k,v)->{
-//			jedis.set(k,v.toString());
-//			List<String> list=Arrays.asList(jedis.get(k).substring(1,jedis.get(k).length()-1).split(", "));
-//		});
         Map<String, String> newConfig = new HashMap<>();
 //		定时与缓存比较发起请求
         channelAndPkgs.forEach((k, v) -> {
@@ -173,7 +168,6 @@ public class MonitorProcessServiceImpl implements MonitorProcessService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String body = sdf.format(date);
         String sign = "channel=" + channel + body;
-        //        String sign= "xnr_voto_l203_cm"+"2017-06-23";
         Mac macSha256 = Mac.getInstance("HmacSHA256");
         String pkg = pkgs.replaceAll(" ", "");
         SecretKeySpec macKey = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");

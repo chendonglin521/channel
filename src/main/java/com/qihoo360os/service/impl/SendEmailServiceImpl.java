@@ -61,6 +61,7 @@ public class SendEmailServiceImpl implements SendEmailService {
     @Autowired
     private TemplateEngine htmlTemplateEngine;
 
+    @Deprecated
     @Override
     public void sendEmail() {
         // 获取系统属性
@@ -123,7 +124,6 @@ public class SendEmailServiceImpl implements SendEmailService {
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
         String body=sdf.format(date);
         String sign= "channel="+channel+body;
-        //        String sign= "xnr_voto_l203_cm"+"2017-06-23";
         Mac macSha256 = Mac.getInstance("HmacSHA256");
         SecretKeySpec macKey = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
         macSha256.init(macKey);
@@ -135,7 +135,7 @@ public class SendEmailServiceImpl implements SendEmailService {
         String json= EntityUtils.toString(entity, "utf-8");
         JSONObject jsonObject=JSONObject.fromObject(json);
         String programName=(String) jsonObject.get("data");
-
+        System.out.println("正常获取"+channel+"的渠道名："+programName);
         //根据参数渲染html模板
         //获取模板内容 发送eamil
         Locale locale = Locale.CHINA;
@@ -171,6 +171,7 @@ public class SendEmailServiceImpl implements SendEmailService {
         message.setText(content, true /* isHtml */);
         // Send email
         this.mailSender.send(mimeMessage);
+        System.out.println("成功发送邮件");
     }
     public static String bytesToHexString(byte[] src){
         StringBuilder stringBuilder = new StringBuilder("");
