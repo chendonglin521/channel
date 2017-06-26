@@ -21,6 +21,9 @@ jedis :
       maxIdle: 10
       maxWaitMillis : 100000
 
+
+#monitor 用于出现异常时 接收邮件
+#cc 抄送
 email:
   host: 10.18.49.46
   port: 25
@@ -29,6 +32,10 @@ email:
   to: i-chendonglin@360.cn
   from: i-chendonglin@360monitor.cn
   cc: i-chendonglin@360.cn,root2@360monitor.cn
+  monitor: i-chendonglin@360.cn
+
+
+
 
 ## ?号 被处理为 换行
 sayHi: " Hi, 艳丽 ?
@@ -37,6 +44,8 @@ sayHi: " Hi, 艳丽 ?
 
 ## 解密sign 的私钥
 secretKey: 04bf6c8f611fd1552d9dd04a8a5875aa19b686dcf6f05493a64d3b376a68d5cb
+## server url
+serverURL: http://10.18.49.151:8080/autoconfig/registerchannel
 
 
 

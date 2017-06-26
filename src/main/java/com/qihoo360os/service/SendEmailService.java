@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
  */
 public interface SendEmailService {
 
-    void sendEmail();
+    void sendEmail() throws MessagingException;
     void sendHtmlEmail(String channel) throws MessagingException, Exception;
 
 

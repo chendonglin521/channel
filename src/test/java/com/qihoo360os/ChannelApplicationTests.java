@@ -1,25 +1,15 @@
 package com.qihoo360os;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import com.qihoo360os.service.SendEmailService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.serializer.SerializationUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.StringUtils;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-import javax.sql.RowSet;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.*;
+import javax.mail.MessagingException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -30,9 +20,16 @@ public class ChannelApplicationTests {
 
 	@Autowired
 	private JedisPool jedis;
+	@Autowired
+	private SendEmailService sendEmailService;
 
 	@Test
 	public void contextLoads() {
+//		try {
+//			sendEmailService.sendEmail();
+//		} catch (MessagingException e) {
+//			e.printStackTrace();
+//		}
 //		String sql2="\tSELECT DISTINCT s.`tacs_channel` channel ,h.real_pkgname pkgname FROM\n" +
 //				"\t\t  `tp_all_channel_summery` s,\n" +
 //				"\t\t  `tp_channel_plans` p ,\n" +

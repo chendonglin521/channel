@@ -1,36 +1,28 @@
 package com.qihoo360os.service.impl;
+
+import com.qihoo360os.common.SignUtils;
 import com.qihoo360os.entity.EmailTable;
 import com.qihoo360os.service.SendEmailService;
 import net.sf.json.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.mail.Message;
+
 import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Created by i-chendonglin on 2017/6/20.
@@ -50,10 +42,14 @@ public class SendEmailServiceImpl implements SendEmailService {
     // 指定抄送人
     @Value("${email.cc}")
     private String[] cc;
+    @Value("${email.monitor}")
+    private String monitor;
     @Value("${sayHi}")
     private String sayHi;
     @Value("${secretKey}")
     private String secretKey;
+    @Value("${serverURL}")
+    private String serverURL;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -61,46 +57,22 @@ public class SendEmailServiceImpl implements SendEmailService {
     @Autowired
     private TemplateEngine htmlTemplateEngine;
 
-    @Override
-    public void sendEmail() {
-        // 获取系统属性
-        Properties properties = System.getProperties();
-        // 设置邮件服务器
-        properties.setProperty("mail.smtp.host", host);
-        // 获取默认session对象
-        Session session = Session.getDefaultInstance(properties);
-        // 创建默认的 MimeMessage 对象
-        MimeMessage message = new MimeMessage(session);
-        // Set From: 头部头字段
-        try {
-            message.setFrom(new InternetAddress(from));
-            // Set To: 头部头字段
-            message.addRecipient(Message.RecipientType.TO,
-                    new InternetAddress(to));
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(SendEmailServiceImpl.class);
 
-            // Set Subject: 头部头字段
-            message.setSubject("测试申请（dzdz6760002507_filemanager）");
-            StringBuffer htmlEmail = new StringBuffer();
-            ClassLoader classLoader = getClass().getClassLoader();
-            ClassPathResource classPathResource = new ClassPathResource("templates/emailContent.html");
-            String line; // 用来保存每行读取的内容
-            BufferedReader reader = new BufferedReader(new InputStreamReader(classPathResource.getInputStream()));
-            line = reader.readLine(); // 读取第一行
-            while (line != null) { // 如果 line 为空说明读完了
-                htmlEmail.append(line); // 将读到的内容添加到 buffer 中
-                line = reader.readLine(); // 读取下一行
-            }
-//            reader.close();
-            // 设置消息体
-            message.setContent(htmlEmail.toString(), "text/html;charset=utf-8");
-            // 发送消息
-            Transport.send(message);
-            System.out.println("Sent message successfully....");
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Override
+    public void sendEmail() throws MessagingException {
+        //获取模板内容 发送eamil
+        Locale locale = Locale.CHINA;
+        final Context ctx = new Context(locale);
+        final MimeMessage mimeMessage = mailSender.createMimeMessage();
+        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
+        message.setSubject("服务器请求返回异常");
+        message.setFrom(from);
+        message.setTo(monitor);
+        message.setText("服务器 msg 异常邮件", true /* isHtml */);
+        // Send email
+        this.mailSender.send(mimeMessage);
+        logger.info("发送服务器异常邮件" );
     }
 
 
@@ -119,23 +91,20 @@ public class SendEmailServiceImpl implements SendEmailService {
     public void sendHtmlEmail(String channel) throws MessagingException, Exception {
         //根据渠道号请求接口，获取email参数
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        Date date=new Date();
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-        String body=sdf.format(date);
-        String sign= "channel="+channel+body;
-        //        String sign= "xnr_voto_l203_cm"+"2017-06-23";
-        Mac macSha256 = Mac.getInstance("HmacSHA256");
-        SecretKeySpec macKey = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
-        macSha256.init(macKey);
-        sign=bytesToHexString(macSha256.doFinal(sign.getBytes()));
-        HttpPost post = new HttpPost("http://10.18.49.151:8080/autoconfig/registerchannel?sign="+sign+"&channel="+channel);
+        String sign= SignUtils.getSign(channel,secretKey);
+        HttpPost post = new HttpPost(serverURL+"?sign="+sign+"&channel="+channel);
         HttpResponse response = httpclient.execute(post);
         HttpEntity entity = response.getEntity();
 //       {"data":"DFSL_BLF_T9PG_CM","msg":"正常调用,该接口已经存在，请更换接口名","status":200,"total":0}
         String json= EntityUtils.toString(entity, "utf-8");
         JSONObject jsonObject=JSONObject.fromObject(json);
+        String msg=(String) jsonObject.get("msg");
+        if(!msg.startsWith("正常调用")){
+            //send me
+            logger.error(msg);
+        }
+        logger.info(msg);
         String programName=(String) jsonObject.get("data");
-
         //根据参数渲染html模板
         //获取模板内容 发送eamil
         Locale locale = Locale.CHINA;
@@ -171,20 +140,6 @@ public class SendEmailServiceImpl implements SendEmailService {
         message.setText(content, true /* isHtml */);
         // Send email
         this.mailSender.send(mimeMessage);
-    }
-    public static String bytesToHexString(byte[] src){
-        StringBuilder stringBuilder = new StringBuilder("");
-        if (src == null || src.length <= 0) {
-            return null;
-        }
-        for (int i = 0; i < src.length; i++) {
-            int v = src[i] & 0xFF;
-            String hv = Integer.toHexString(v);
-            if (hv.length() < 2) {
-                stringBuilder.append(0);
-            }
-            stringBuilder.append(hv);
-        }
-        return stringBuilder.toString();
+        logger.info("发送邮件成功，channel： "+channel );
     }
 }
