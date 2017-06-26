@@ -29,6 +29,7 @@ public class MonitorScheduleTask {
         if(resultMap!=null&&resultMap.size()>0){
             resultMap.forEach((k,v)->{
                 try {
+                    monitorProcess.postChannelAndPkg(k,v);
                     sendEmailService.sendHtmlEmail(k);
                 } catch (Exception e) {
                     e.printStackTrace();

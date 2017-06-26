@@ -12,4 +12,5 @@ public interface SendEmailService {
     void sendEmail();
     void sendHtmlEmail(String channel) throws MessagingException, Exception;
 
+
 }

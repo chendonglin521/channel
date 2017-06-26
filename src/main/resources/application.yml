@@ -30,11 +30,12 @@ email:
   from: i-chendonglin@360monitor.cn
   cc: i-chendonglin@360.cn,root2@360monitor.cn
 
-
+## ?号 被处理为 换行
 sayHi: " Hi, 艳丽 ?
               请帮忙协调测试，谢谢啦。?
           内容如下："
 
+## 解密sign 的私钥
 secretKey: 04bf6c8f611fd1552d9dd04a8a5875aa19b686dcf6f05493a64d3b376a68d5cb
 
 
