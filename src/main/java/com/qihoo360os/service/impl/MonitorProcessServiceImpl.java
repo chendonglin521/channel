@@ -40,25 +40,29 @@ public class MonitorProcessServiceImpl implements MonitorProcessService {
 
     @Value("${serverURL}")
     private String serverURL;
+    @Value("${whiteList}")
+    private String whiteList;
 
     private static final Logger logger = LoggerFactory.getLogger(MonitorProcessServiceImpl.class);
 
     @Override
     public Map<String, String> getUpdates() {
         Jedis jedis = jedisPool.getResource();
-        String sql2 = "SELECT DISTINCT \n" +
-                "  s.`tacs_channel` channel,\n" +
-                "  h.real_pkgname pkgname \n" +
-                "FROM\n" +
-                "  `tp_all_channel_summery` s,\n" +
-                "  `tp_channel_plans` p,\n" +
-                "  `tp_real_hoaxes` h \n" +
-                "WHERE s.`tacs_channel` = p.`tcr_channel` \n" +
-                "  AND p.`tcr_channel` = h.real_channel \n" +
-                "  AND s.`tacs_total_antihoax` > 500 \n" +
-                " AND s.tacs_rule_name=p.tcr_feature"+
-                "  AND p.`tcr_done` != 1 \n" +
-                "ORDER BY s.`tacs_channel` ";
+        String sql2 ="  SELECT DISTINCT\n" +
+                "                  s.`tacs_channel` channel,\n" +
+                "                  h.real_pkgname pkgname \n" +
+                "                FROM\n" +
+                "                  `tp_all_channel_summery` s,\n" +
+                "                  `tp_channel_plans` p,\n" +
+                "                  `tp_real_hoaxes` h \n" +
+                "                WHERE s.`tacs_channel` NOT IN ("+whiteList+")\n" +
+                "                  AND s.`tacs_channel` = p.`tcr_channel` \n" +
+                "                  AND s.tacs_rule_name=p.tcr_feature    \n" +
+                "                  AND p.`tcr_channel` = h.real_channel  \n" +
+                "                  AND s.`tacs_total_antihoax` > 500 \n" +
+                "                  AND p.`tcr_done` != 1 \n" +
+                "               \n" +
+                "                ORDER BY s.`tacs_channel`";
 
 //      list< map<channel,pkg>> from mysql
         List<Map<String, String>> channelAndPkg = jdbcTemplate.query(sql2, (rs, num) -> {

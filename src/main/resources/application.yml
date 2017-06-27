@@ -47,7 +47,8 @@ secretKey: 04bf6c8f611fd1552d9dd04a8a5875aa19b686dcf6f05493a64d3b376a68d5cb
 ## server url
 serverURL: http://10.18.49.151:8080/autoconfig/registerchannel
 
-
+## 渠道白名单
+whiteList: "'dfsldfsl10164934'"
 
 
 

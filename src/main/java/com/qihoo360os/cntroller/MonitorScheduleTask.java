@@ -19,7 +19,8 @@ public class MonitorScheduleTask {
     @Autowired
     private SendEmailService sendEmailService;
 
-    @Scheduled(fixedRate = 60000)
+    //秒、分、时、日、月
+    @Scheduled(cron = "0 0 * * * *")
     public void startMonitor() {
         Map<String, String> resultMap = monitorProcess.getUpdates();
         //resultMap 不为空时 发送通知邮件
