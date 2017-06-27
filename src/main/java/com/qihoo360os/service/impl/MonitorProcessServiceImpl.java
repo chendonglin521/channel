@@ -84,7 +84,10 @@ public class MonitorProcessServiceImpl implements MonitorProcessService {
                 }
             });
         });
+<<<<<<< HEAD
 //        Map< channel,pkgs> 最终新增　channel +pkgs
+=======
+>>>>>>> 8be4162fc085cb0418a7369a6098cf45a8f454d8
         Map<String, String> newConfig = new HashMap<>();
 //		定时与缓存比较发起请求
         channelAndPkgs.forEach((k, v) -> {
@@ -110,7 +113,15 @@ public class MonitorProcessServiceImpl implements MonitorProcessService {
     public void postChannelAndPkg(String channel, String pkgs) throws MessagingException, Exception {
 
         CloseableHttpClient httpclient = HttpClients.createDefault();
+<<<<<<< HEAD
         String sign= SignUtils.getSign(channel,secretKey);
+=======
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String body = sdf.format(date);
+        String sign = "channel=" + channel + body;
+        Mac macSha256 = Mac.getInstance("HmacSHA256");
+>>>>>>> 8be4162fc085cb0418a7369a6098cf45a8f454d8
         String pkg = pkgs.replaceAll(" ", "");
         HttpPost post = new HttpPost(serverURL+"?sign=" + sign + "&channel=" + channel + "&pkg" + pkg);
         HttpResponse response = httpclient.execute(post);

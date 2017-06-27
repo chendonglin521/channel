@@ -1,5 +1,6 @@
 package com.qihoo360os;
 
+<<<<<<< HEAD
 import com.qihoo360os.service.SendEmailService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +11,28 @@ import org.springframework.test.context.junit4.SpringRunner;
 import redis.clients.jedis.JedisPool;
 
 import javax.mail.MessagingException;
+=======
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.serializer.SerializationUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StringUtils;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+
+import javax.sql.RowSet;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.*;
+>>>>>>> 8be4162fc085cb0418a7369a6098cf45a8f454d8
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -20,6 +43,7 @@ public class ChannelApplicationTests {
 
 	@Autowired
 	private JedisPool jedis;
+<<<<<<< HEAD
 	@Autowired
 	private SendEmailService sendEmailService;
 
@@ -30,6 +54,11 @@ public class ChannelApplicationTests {
 //		} catch (MessagingException e) {
 //			e.printStackTrace();
 //		}
+=======
+
+	@Test
+	public void contextLoads() {
+>>>>>>> 8be4162fc085cb0418a7369a6098cf45a8f454d8
 //		String sql2="\tSELECT DISTINCT s.`tacs_channel` channel ,h.real_pkgname pkgname FROM\n" +
 //				"\t\t  `tp_all_channel_summery` s,\n" +
 //				"\t\t  `tp_channel_plans` p ,\n" +
